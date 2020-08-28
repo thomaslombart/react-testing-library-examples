@@ -6,16 +6,16 @@ function Todos({ todos: originalTodos }) {
   const [todos, setTodos] = React.useState(originalTodos || []);
   const [activeFilter, setActiveFilter] = React.useState(filters[0]);
 
-  const addTodo = e => {
+  const addTodo = (e) => {
     if (e.key === "Enter" && input.length > 0) {
-      setTodos(todos => [{ name: input, done: false }, ...todos]);
+      setTodos((todos) => [{ name: input, done: false }, ...todos]);
       setInput("");
     }
   };
 
   const filteredTodos = React.useMemo(
     () =>
-      todos.filter((todo, i) => {
+      todos.filter((todo) => {
         if (activeFilter === "all") {
           return todo;
         }
@@ -24,23 +24,21 @@ function Todos({ todos: originalTodos }) {
           return !todo.done;
         }
 
-        if (activeFilter === "done") {
-          return todo.done;
-        }
+        return todo.done;
       }),
     [todos, activeFilter]
   );
 
-  const toggle = index => {
-    setTodos(todos =>
+  const toggle = (index) => {
+    setTodos((todos) =>
       todos.map((todo, i) =>
         index === i ? { ...todo, done: !todo.done } : todo
       )
     );
   };
 
-  const remove = index => {
-    setTodos(todos => todos.filter((todo, i) => i !== index));
+  const remove = (index) => {
+    setTodos((todos) => todos.filter((todo, i) => i !== index));
   };
 
   return (
@@ -48,7 +46,7 @@ function Todos({ todos: originalTodos }) {
       <h2 className="title">To-dos</h2>
       <input
         className="input"
-        onChange={e => setInput(e.target.value)}
+        onChange={(e) => setInput(e.target.value)}
         onKeyDown={addTodo}
         value={input}
         placeholder="Add something..."
@@ -56,17 +54,20 @@ function Todos({ todos: originalTodos }) {
       <ul className="list-todo">
         {filteredTodos.length > 0 ? (
           filteredTodos.map(({ name, done }, i) => (
-            <li key={`${name}-${i}`} className="todo-item" data-testid={`todo-${i}`}>
+            <li key={`${name}-${i}`} className="todo-item">
               <input
-                data-testid="checkbox"
                 type="checkbox"
                 checked={done}
                 onChange={() => toggle(i)}
+                id={`todo-${i}`}
               />
               <div className="todo-infos">
-                <span className={`todo-name ${done ? "todo-name-done" : ""}`}>
+                <label
+                  htmlFor={`todo-${i}`}
+                  className={`todo-name ${done ? "todo-name-done" : ""}`}
+                >
                   {name}
-                </span>
+                </label>
                 <button className="todo-delete" onClick={() => remove(i)}>
                   Remove
                 </button>
@@ -74,14 +75,16 @@ function Todos({ todos: originalTodos }) {
             </li>
           ))
         ) : (
-            <p className="no-results">No to-dos!</p>
-          )}
+          <p className="no-results">No to-dos!</p>
+        )}
       </ul>
       <ul className="list-filters">
-        {filters.map(filter => (
+        {filters.map((filter) => (
           <li
             key={filter}
-            className={`filter ${activeFilter === filter ? "filter-active" : ""}`}
+            className={`filter ${
+              activeFilter === filter ? "filter-active" : ""
+            }`}
             onClick={() => setActiveFilter(filter)}
           >
             {filter}

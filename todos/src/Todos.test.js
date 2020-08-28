@@ -1,66 +1,82 @@
-import React from 'react';
-import { render, within, fireEvent } from "@testing-library/react"
+import React from "react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 
-import Todos from './Todos';
+import Todos from "./Todos";
 
 describe("Todos", () => {
   test("adds a new to-do", () => {
-    const { getByPlaceholderText, getByText } = render(<Todos />)
-    const input = getByPlaceholderText(/add something/i)
-    const todo = "Read Master React Testing"
-    getByText("No to-dos!")
+    render(<Todos />);
+    const input = screen.getByPlaceholderText(/add something/i);
+    const todo = "Read Master React Testing";
 
-    fireEvent.change(input, { target: { value: todo } })
-    fireEvent.keyDown(input, { key: "Enter" })
+    screen.getByText("No to-dos!");
 
-    getByText(todo)
-    expect(input).toHaveValue("")
-  })
+    fireEvent.change(input, { target: { value: todo } });
+    fireEvent.keyDown(input, { key: "Enter" });
 
-test("removes a to-do", () => {
-  const todos = [{ name: "Read Master React Testing", done: false }, { name: "Buy groceries", done: true }, { name: "Walk the dog", done: false }]
-  const { getByTestId, queryByText } = render(<Todos todos={todos} />)
+    screen.getByText(todo);
+    expect(input).toHaveValue("");
+  });
 
-  const removeButton = within(getByTestId("todo-1")).getByText(/remove/i)
-  fireEvent.click(removeButton)
+  test("removes a to-do", () => {
+    const todos = [
+      { name: "Read Master React Testing", done: false },
+      { name: "Buy groceries", done: true },
+      { name: "Walk the dog", done: false },
+    ];
+    render(<Todos todos={todos} />);
 
-  expect(queryByText(todos[1].name)).not.toBeInTheDocument()
-})
+    const removeButton = within(screen.getAllByRole("listitem")[1]).getByText(
+      /remove/i
+    );
+    fireEvent.click(removeButton);
+
+    expect(screen.queryByText(todos[1].name)).not.toBeInTheDocument();
+  });
 
   test("marks a to-do as done", () => {
-    const todos = [{ name: "Read Master React Testing", done: false }, { name: "Buy groceries", done: true }]
-    const { getByTestId } = render(<Todos todos={todos} />)
-    const firstTodoCheckbox = within(getByTestId("todo-0")).getByTestId("checkbox")
-    expect(firstTodoCheckbox.checked).toBe(false)
+    const todos = [
+      { name: "Read Master React Testing", done: false },
+      { name: "Buy groceries", done: true },
+    ];
+    render(<Todos todos={todos} />);
+    const firstTodoCheckbox = screen.getByLabelText(todos[0].name);
 
-    fireEvent.click(firstTodoCheckbox)
+    expect(firstTodoCheckbox.checked).toBe(false);
 
-    expect(firstTodoCheckbox.checked).toBe(true)
-  })
+    fireEvent.click(firstTodoCheckbox);
+
+    expect(firstTodoCheckbox.checked).toBe(true);
+  });
 
   test("filters to-dos", () => {
-    const todos = [{ name: "Read Master React Testing", done: false }, { name: "Buy groceries", done: true }, { name: "Walk the dog", done: false }]
-    const activeTodos = [todos[0], todos[2]]
-    const doneTodo = todos[1]
-    const { getByText, queryByText } = render(<Todos todos={todos} />)
-    const activeFilter = getByText(/active/i)
-    const doneFilter = getByText(/done/i)
+    const todos = [
+      { name: "Read Master React Testing", done: false },
+      { name: "Buy groceries", done: true },
+      { name: "Walk the dog", done: false },
+    ];
+    const activeTodos = [todos[0], todos[2]];
+    const doneTodo = todos[1];
+    render(<Todos todos={todos} />);
+
+    const activeFilter = screen.getByText(/active/i);
+    const doneFilter = screen.getByText(/done/i);
 
     // displays all todos by default
-    todos.forEach(todo => {
-      expect(queryByText(todo.name)).toBeInTheDocument()
-    })
+    todos.forEach((todo) => {
+      expect(screen.queryByText(todo.name)).toBeInTheDocument();
+    });
 
-    fireEvent.click(activeFilter)
-    activeTodos.forEach(todo => {
-      expect(queryByText(todo.name)).toBeInTheDocument()
-    })
-    expect(queryByText(doneTodo.name)).not.toBeInTheDocument()
+    fireEvent.click(activeFilter);
+    activeTodos.forEach((todo) => {
+      expect(screen.queryByText(todo.name)).toBeInTheDocument();
+    });
+    expect(screen.queryByText(doneTodo.name)).not.toBeInTheDocument();
 
-    fireEvent.click(doneFilter)
-    activeTodos.forEach(todo => {
-      expect(queryByText(todo.name)).not.toBeInTheDocument()
-    })
-    expect(queryByText(doneTodo.name)).toBeInTheDocument()
-  })
-})
+    fireEvent.click(doneFilter);
+    activeTodos.forEach((todo) => {
+      expect(screen.queryByText(todo.name)).not.toBeInTheDocument();
+    });
+    expect(screen.queryByText(doneTodo.name)).toBeInTheDocument();
+  });
+});
