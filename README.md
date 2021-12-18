@@ -1,6 +1,6 @@
 # React Testing Library examples
 
-Testing examples used in this [blog post](https://thomlom.dev/test-react-testing-library/).
+Testing examples used in this [blog post](https://thomaslombart.com/test-react-testing-library/).
 
 ## Setup
 
